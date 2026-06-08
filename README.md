@@ -12,6 +12,8 @@ SIFTGuard is a **multi-agent AI system** for autonomous digital forensics and in
 
 ## Architecture
 
+![SIFTGuard Architecture](docs/architecture_diagram.png)
+
 ```
 Evidence Artifacts (memory, EVTX, disk images)
            │
