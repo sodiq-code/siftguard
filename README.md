@@ -199,7 +199,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 | # | Component | Location |
 |---|-----------|----------|
 | 1 | Code Repository | This repo |
-| 2 | Demo Video | [YouTube link] |
+| 2 | Demo Video | `demo/siftguard_FINAL.mp4` (local) + YouTube pending |
 | 3 | Architecture Diagram | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 4 | Written Description | [docs/DESCRIPTION.md](docs/DESCRIPTION.md) |
 | 5 | Dataset Documentation | [docs/DATASET.md](docs/DATASET.md) |
