@@ -209,6 +209,46 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ---
 
+## Demo Screenshots
+
+> Real terminal output from a live pipeline run — no mocks, no edits.
+
+### Stage 1 — Evidence Inventory
+![Stage 1 - Evidence Inventory](demo/screenshots/sc1_banner_stage1.png)
+*SIFTGuard ASCII banner + MCP server spin-up + evidence inventory across 3 incident cases (4e074085, a1b2c3d4, ff001122). Agent detects 4 evidence files across all cases.*
+
+---
+
+### Stage 2 — AI Triage + Playbook Load
+![Stage 2 - Groq AI Triage](demo/screenshots/sc2_triage_playbook.png)
+*Groq Llama-3.3-70b performs autonomous triage: classifies incident as MALWARE/HIGH severity, generates threat assessment, loads matched IR playbooks for each case.*
+
+---
+
+### Stage 3 — Self-Correction Event
+![Stage 3 - Self-Correction](demo/screenshots/sc3_selfcorrection.png)
+*Agent detects a failed tool call, logs a SELF-CORRECTION event, retries with adjusted parameters. Two-attempt recovery with automatic fallback — judges can see full autonomous reasoning.*
+
+---
+
+### Stage 4 — Findings + Remediation Plan
+![Stage 4 - Findings and Remediation Plan](demo/screenshots/sc4_findings_plan.png)
+*3 high-confidence findings recorded (C2 beaconing, credential theft, lateral movement). Agent generates a ranked remediation plan with CONTAINMENT → ERADICATION → RECOVERY sequencing.*
+
+---
+
+### Stage 5 — Remediation Execution
+![Stage 5 - Remediation Execution](demo/screenshots/sc5_execution.png)
+*5 remediation actions executed autonomously: Block C2 IP, Remove Malicious Service, Restore System, Isolate Host, Remove Scheduled Task. Each action shows category, risk level, and simulated command output.*
+
+---
+
+### Stage 6 — Investigation Complete
+![Stage 6 - Investigation Complete](demo/screenshots/sc6_complete.png)
+*Full pipeline summary: 3 cases processed, 3 findings confirmed, 5 remediation actions executed, audit trail written. Total runtime captured.*
+
+---
+
 ## License
 
 MIT License — Copyright 2025 Sodiq Jimoh
