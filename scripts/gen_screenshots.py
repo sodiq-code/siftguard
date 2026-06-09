@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-SIFTGuard — Screenshot Generator
-Renders authentic terminal-style screenshots with ImageMagick.
-All timestamps show Jun 9 2026.
+[DEPRECATED] SIFTGuard — Screenshot Generator (Pillow/ImageMagick fake)
+Superseded by scripts/render_terminal_shots.py which renders real pipeline
+output via ansi2html + Chrome headless. Do NOT use this file.
 """
 
 import subprocess, os, textwrap

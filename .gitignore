@@ -21,3 +21,4 @@ demo/siftguard_demo_raw*.mp4
 demo/siftguard_final_demo*.mp4
 demo/task.md
 main_slow.py
+scripts/run_and_screenshot.sh
