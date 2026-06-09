@@ -196,7 +196,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ## Demo Video
 
-> **3m 58s elite demo** — full 7-stage pipeline with autonomous execution, self-correction, HITL approval, and audit trail.
+> **4m 29s elite demo** — 11-segment production video: title card, full 8-stage pipeline with autonomous execution, self-correction, HITL approval, and audit trail, results + outro.
 
 [![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com/watch?v=PLACEHOLDER)
 
@@ -218,7 +218,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 | # | Component | Location |
 |---|-----------|----------|
 | 1 | Code Repository | This repo |
-| 2 | Demo Video | [YouTube — upload pending] · [Local: demo/siftguard_FINAL.mp4](demo/siftguard_FINAL.mp4) |
+| 2 | Demo Video | [YouTube — upload pending] · [Local: demo/siftguard_FINAL.mp4](demo/siftguard_FINAL.mp4) (4m 29s) |
 | 3 | Architecture Diagram | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 4 | Written Description | [docs/DESCRIPTION.md](docs/DESCRIPTION.md) |
 | 5 | Dataset Documentation | [docs/DATASET.md](docs/DATASET.md) |
