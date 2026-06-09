@@ -198,9 +198,9 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 > **3m 26s elite demo** — 9-scene animated production video: intro, problem statement, solution overview, live pipeline execution (terminal), EVTX deep-dive, MITRE ATT&CK mapping, audit trail, architecture, and outro. Narrated with full VO + background music.
 
-[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-Video-blue?style=for-the-badge&logo=video)](https://storage.googleapis.com/runable-templates/cli-uploads%2FgF97KkRLP6RuJcVpdMvQZsF6HT7oQBtx%2FuClHjY2GdPGYhcTAk9Bov%2Fsiftguard_ELITE_v2.mp4)
+[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-Video-blue?style=for-the-badge&logo=video)](https://storage.googleapis.com/runable-templates/cli-uploads%2FgF97KkRLP6RuJcVpdMvQZsF6HT7oQBtx%2Fo5QQdrMkP1YUPa0NaBJzJ%2Fsiftguard_ELITE_v3.mp4)
 
-**Local file:** [`demo/siftguard_ELITE_v2.mp4`](demo/siftguard_ELITE_v2.mp4)
+**Local file:** [`demo/siftguard_ELITE_v3.mp4`](demo/siftguard_ELITE_v3.mp4)
 
 **What the demo covers:**
 - Stage 1 — Evidence inventory (4 artifacts discovered)
@@ -218,7 +218,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 | # | Component | Location |
 |---|-----------|----------|
 | 1 | Code Repository | This repo |
-| 2 | Demo Video | [▶ Watch Demo (3m 26s)](https://storage.googleapis.com/runable-templates/cli-uploads%2FgF97KkRLP6RuJcVpdMvQZsF6HT7oQBtx%2FuClHjY2GdPGYhcTAk9Bov%2Fsiftguard_ELITE_v2.mp4) · [Local: demo/siftguard_ELITE_v2.mp4](demo/siftguard_ELITE_v2.mp4) |
+| 2 | Demo Video | [▶ Watch Demo (3m 26s)](https://storage.googleapis.com/runable-templates/cli-uploads%2FgF97KkRLP6RuJcVpdMvQZsF6HT7oQBtx%2Fo5QQdrMkP1YUPa0NaBJzJ%2Fsiftguard_ELITE_v3.mp4) · [Local: demo/siftguard_ELITE_v3.mp4](demo/siftguard_ELITE_v3.mp4) |
 | 3 | Architecture Diagram | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 4 | Written Description | [docs/DESCRIPTION.md](docs/DESCRIPTION.md) |
 | 5 | Dataset Documentation | [docs/DATASET.md](docs/DATASET.md) |
