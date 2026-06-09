@@ -24,7 +24,7 @@
 ║   ███████║██║██║        ██║   ╚██████╔╝╚██████╔╝██║  ██║██║  ██║║
 ║   ╚══════╝╚═╝╚═╝        ╚═╝    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝║
 ║                                                                  ║
-║      Autonomous Forensic Investigation Agent — FIND EVIL! 2025  ║
+║      Autonomous Forensic Investigation Agent — FIND EVIL! 2026  ║
 ║      Multi-Agent · MCP Server · Self-Correction · HITL          ║
 ╚══════════════════════════════════════════════════════════════════╝
 

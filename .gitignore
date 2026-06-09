@@ -17,3 +17,7 @@ data/cases/
 *.dmp
 *.pcap
 *.pcapng
+demo/siftguard_demo_raw*.mp4
+demo/siftguard_final_demo*.mp4
+demo/task.md
+main_slow.py
