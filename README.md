@@ -2,11 +2,11 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![FIND EVIL! 2025](https://img.shields.io/badge/SANS-FIND%20EVIL!%202025-red.svg)](https://www.sans.org)
+[![FIND EVIL! 2026](https://img.shields.io/badge/SANS-FIND%20EVIL!%202026-red.svg)](https://www.sans.org)
 
 SIFTGuard is a **multi-agent AI system** for autonomous digital forensics and incident response. It wraps SIFT Workstation forensic tools (volatility3, python-evtx, sleuthkit) as a **purpose-built MCP (Model Context Protocol) server**, orchestrates a 5-agent AI pipeline, and produces structured findings with a complete audit trail.
 
-> **FIND EVIL! Hackathon 2025** — Track: Custom MCP Server + Multi-Agent Pipeline on SIFT Workstation
+> **FIND EVIL! Hackathon 2026** — Track: Custom MCP Server + Multi-Agent Pipeline on SIFT Workstation
 
 ---
 
@@ -194,12 +194,31 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ---
 
+## Demo Video
+
+> **3m 58s elite demo** — full 7-stage pipeline with autonomous execution, self-correction, HITL approval, and audit trail.
+
+[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com/watch?v=PLACEHOLDER)
+
+**Local file:** [`demo/siftguard_FINAL.mp4`](demo/siftguard_FINAL.mp4)
+
+**What the demo covers:**
+- Stage 1 — Evidence inventory (4 artifacts discovered)
+- Stage 2 — Groq AI triage in 0.3s, playbook selected
+- Stage 4 — Deep forensic analysis: volatility3, EVTX parsing, IOC extraction
+- **Self-Correction Engine** — 2 autonomous retries, zero human intervention (Judging Criterion #1)
+- Stage 5 — Findings + prioritized remediation plan (3 critical, 2 high severity)
+- Stage 6 — Human-in-the-Loop approval gate (Judging Criterion #4)
+- Stage 7 — Audit trail + JSON report (Judging Criterion #5)
+
+---
+
 ## Submission Components
 
 | # | Component | Location |
 |---|-----------|----------|
 | 1 | Code Repository | This repo |
-| 2 | Demo Video | [YouTube link] |
+| 2 | Demo Video | [YouTube — upload pending] · [Local: demo/siftguard_FINAL.mp4](demo/siftguard_FINAL.mp4) |
 | 3 | Architecture Diagram | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 4 | Written Description | [docs/DESCRIPTION.md](docs/DESCRIPTION.md) |
 | 5 | Dataset Documentation | [docs/DATASET.md](docs/DATASET.md) |
@@ -251,4 +270,4 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ## License
 
-MIT License — Copyright 2025 Sodiq Jimoh
+MIT License — Copyright 2026 Sodiq Jimoh
