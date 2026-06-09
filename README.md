@@ -196,11 +196,11 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ## Demo Video
 
-> **4m 29s elite demo** — 11-segment production video: title card, full 8-stage pipeline with autonomous execution, self-correction, HITL approval, and audit trail, results + outro.
+> **4m 22s elite demo** — 11-segment production video: title card, full 8-stage pipeline with autonomous execution, self-correction, HITL approval, and audit trail, results + outro.
 
-[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com/watch?v=PLACEHOLDER)
+[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-Video-blue?style=for-the-badge&logo=video)](https://storage.googleapis.com/runable-templates/cli-uploads%2FgF97KkRLP6RuJcVpdMvQZsF6HT7oQBtx%2F-KRHdG2zr6w41g2tUcC-U%2Fsiftguard_FINAL_v2.mp4)
 
-**Local file:** [`demo/siftguard_FINAL.mp4`](demo/siftguard_FINAL.mp4)
+**Local file:** [`demo/siftguard_FINAL_v2.mp4`](demo/siftguard_FINAL_v2.mp4)
 
 **What the demo covers:**
 - Stage 1 — Evidence inventory (4 artifacts discovered)
@@ -218,7 +218,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 | # | Component | Location |
 |---|-----------|----------|
 | 1 | Code Repository | This repo |
-| 2 | Demo Video | [YouTube — upload pending] · [Local: demo/siftguard_FINAL.mp4](demo/siftguard_FINAL.mp4) (4m 29s) |
+| 2 | Demo Video | [▶ Watch Demo (4m 22s)](https://storage.googleapis.com/runable-templates/cli-uploads%2FgF97KkRLP6RuJcVpdMvQZsF6HT7oQBtx%2F-KRHdG2zr6w41g2tUcC-U%2Fsiftguard_FINAL_v2.mp4) · [Local: demo/siftguard_FINAL_v2.mp4](demo/siftguard_FINAL_v2.mp4) |
 | 3 | Architecture Diagram | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 4 | Written Description | [docs/DESCRIPTION.md](docs/DESCRIPTION.md) |
 | 5 | Dataset Documentation | [docs/DATASET.md](docs/DATASET.md) |
