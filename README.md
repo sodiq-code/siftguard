@@ -230,39 +230,39 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 > Real terminal output from a live pipeline run — no mocks, no edits.
 
-### Stage 1 — Evidence Inventory
-![Stage 1 - Evidence Inventory](demo/screenshots/sc1_banner_stage1.png)
+### Stage 1/8 — Evidence Inventory
+![Stage 1/8 - Evidence Inventory](demo/screenshots/sc1_banner_stage1.png)
 *SIFTGuard ASCII banner + MCP server spin-up + evidence inventory across 3 incident cases (4e074085, a1b2c3d4, ff001122). Agent detects 4 evidence files across all cases.*
 
 ---
 
-### Stage 2 — AI Triage + Playbook Load
-![Stage 2 - Groq AI Triage](demo/screenshots/sc2_triage_playbook.png)
+### Stages 2–3/8 — AI Triage + Playbook Load
+![Stages 2-3/8 - Groq AI Triage](demo/screenshots/sc2_triage_playbook.png)
 *Groq Llama-3.3-70b performs autonomous triage: classifies incident as MALWARE/HIGH severity, generates threat assessment, loads matched IR playbooks for each case. (Output truncated at right edge — full hypothesis text continues beyond screenshot width.)*
 
 ---
 
-### Stage 3 — Self-Correction Event
-![Stage 3 - Self-Correction](demo/screenshots/sc3_selfcorrection.png)
-*Agent detects a failed tool call, logs a SELF-CORRECTION event, retries with adjusted parameters. Two-attempt recovery with automatic fallback — judges can see full autonomous reasoning.*
+### Stage 4/8 — Self-Correction Event
+![Stage 4/8 - Self-Correction](demo/screenshots/sc3_selfcorrection.png)
+*Agent detects a failed tool call mid-analysis, logs a SELF-CORRECTION event, retries with adjusted parameters. Two-attempt autonomous recovery with full audit logging.*
 
 ---
 
-### Stage 4 — Deep Analysis (Stage 5/8)
-![Stage 4 - Findings and Remediation Plan](demo/screenshots/sc4_findings_plan.png)
-*Pipeline Stage 5/8 — AnalyzerAgent deep forensic pass: volatility3 memory scan, EVTX log parsing, IOC extraction. 3 high-confidence findings recorded (C2 beaconing, credential theft, lateral movement).*
+### Stage 5/8 — Deep Analysis + Finding Recording
+![Stage 5/8 - Findings](demo/screenshots/sc4_findings_plan.png)
+*AnalyzerAgent deep forensic pass: volatility3 memory scan, EVTX log parsing, IOC extraction. 3 high-confidence findings recorded to case file (C2 beaconing, credential theft, lateral movement).*
 
 ---
 
-### Stage 5 — Remediation Plan (Stages 6–7/8)
-![Stage 5 - Remediation Execution](demo/screenshots/sc5_execution.png)
-*Pipeline Stages 6–7/8 — PlannerAgent generates ranked remediation plan; ExecutorAgent runs 5 actions autonomously: Block C2 IP, Remove Malicious Service, Restore System, Isolate Host, Remove Scheduled Task.*
+### Stages 6–7/8 — Remediation Plan + HITL Gate
+![Stages 6-7/8 - Remediation Execution](demo/screenshots/sc5_execution.png)
+*PlannerAgent generates ranked remediation plan; ExecutorAgent surfaces it through the Human-in-the-Loop approval gate before executing 5 actions: Block C2 IP, Remove Malicious Service, Restore System, Isolate Host, Remove Scheduled Task.*
 
 ---
 
-### Stage 6 — Investigation Complete
-![Stage 6 - Investigation Complete](demo/screenshots/sc6_complete.png)
-*Full pipeline summary: 3 cases processed, 3 findings confirmed, 5 remediation actions executed, audit trail written. Total runtime captured.*
+### Stage 8/8 — Audit Trail + Investigation Complete
+![Stage 8/8 - Investigation Complete](demo/screenshots/sc6_complete.png)
+*Full pipeline summary: 3 cases processed, 3 findings confirmed, 5 remediation actions executed, structured audit trail written. Total runtime captured.*
 
 ---
 
