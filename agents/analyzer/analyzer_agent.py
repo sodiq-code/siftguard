@@ -323,10 +323,15 @@ class AnalyzerAgent:
             gaps=gaps
         )
 
+        # Count MITRE techniques from both findings and unique_mitre list
+        finding_techniques = set(f.mitre_technique for f in findings if f.mitre_technique)
+        api_techniques = set(t.get("technique", "") for t in unique_mitre if t.get("technique"))
+        all_techniques = finding_techniques | api_techniques
+
         logger.info("analysis_complete",
                     findings=len(findings),
                     timeline_events=len(timeline_events),
-                    mitre_techniques=len(unique_mitre),
+                    mitre_techniques=len(all_techniques),
                     iocs_total=sum(len(v) for v in all_iocs.values() if isinstance(v, list)))
 
         return result
