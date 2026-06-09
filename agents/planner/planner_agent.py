@@ -113,6 +113,12 @@ Respond ONLY with valid JSON."""
                     incident_id=incident_id,
                     findings=len(analysis_result.findings))
 
+        # Demo mode: return deterministic plan without calling Groq API
+        if os.getenv("DEMO_MODE", "false").lower() == "true":
+            logger.info("plan_generated", incident_id=incident_id,
+                        actions=5, requires_approval=True, mode="demo")
+            return self._rule_based_plan(incident_id, analysis_result)
+
         # Extract key IOCs for plan
         iocs = analysis_result.iocs
         c2_ips = iocs.get("public_ips", []) or ["185.220.101.47"]

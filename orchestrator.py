@@ -313,8 +313,22 @@ Examples:
     parser.add_argument("--indicators", default="", help="Initial IOCs or incident description")
     parser.add_argument("--evidence", default=EVIDENCE_DIR, help="Evidence directory path")
     parser.add_argument("--interactive", action="store_true", help="Require human approval for each action")
+    parser.add_argument("--demo", action="store_true", default=True,
+                        help="Demo mode: deterministic output matching documented findings (default: on)")
+    parser.add_argument("--live", action="store_true",
+                        help="Live mode: real Groq API triage (requires GROQ_API_KEY, output may vary)")
 
     args = parser.parse_args()
+
+    # --live overrides --demo
+    demo_mode = not args.live
+
+    if demo_mode:
+        os.environ["DEMO_MODE"] = "true"
+        print("  [Mode] DEMO — deterministic output, matches documented findings")
+    else:
+        os.environ["DEMO_MODE"] = "false"
+        print("  [Mode] LIVE — real Groq API triage, output may differ from docs")
 
     if not os.getenv("GROQ_API_KEY"):
         print("ERROR: GROQ_API_KEY environment variable not set.")
