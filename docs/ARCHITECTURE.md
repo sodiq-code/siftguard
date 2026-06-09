@@ -110,6 +110,52 @@ The system has three layers:
 ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
+## MCP Security Boundary
+
+The MCP server enforces a strict **read-only evidence boundary**. Evidence source files are never passed as writable file descriptors — all forensic tools receive file paths as read-only string arguments.
+
+### Tool Classification by Access Mode
+
+| Tool | Access Mode | Notes |
+|------|-------------|-------|
+| `list_evidence` | Read-only | Directory scan only, no writes |
+| `run_volatility` | Read-only | Passes evidence path as string arg to volatility3; no fd passed |
+| `parse_evtx` | Read-only | Opens `.evtx` file read-only via python-evtx |
+| `build_timeline` | Read-only | Reads all artifact dirs; output written to separate `cases/` dir |
+| `run_sleuthkit` | Read-only | `fls`/`mmls`/`istat` read-only by design; no modification subcommands exposed |
+| `extract_iocs` | Read-only | Operates on in-memory string output, never touches source files |
+| `check_mitre` | Read-only | In-memory knowledge base lookup |
+| `search_playbook` | Read-only | In-memory playbook DB lookup |
+| `record_finding` | Append-only write | Appends to `findings.jsonl` — **case output file only, not evidence** |
+| `get_audit_trail` | Append-only write | Appends to `audit_SESSION.json` — **case output file only, not evidence** |
+
+**Write operations are strictly append-only and isolated to `data/cases/`** — a separate directory from `data/evidence/`. Evidence source files (`data/evidence/memory/`, `data/evidence/logs/`, `data/evidence/disk/`) are never opened for writing by any MCP tool.
+
+### Security Boundary Enforcement
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  EVIDENCE SOURCE (read-only zone)                           ║
+║  data/evidence/memory/*.mem   → passed as path string only  ║
+║  data/evidence/logs/*.evtx    → opened O_RDONLY             ║
+║  data/evidence/disk/*.E01     → passed as path string only  ║
+╠══════════════════════════════════════════════════════════════╣
+║  MCP LAYER (enforcement boundary)                           ║
+║  All tools receive evidence paths — never file handles      ║
+║  Tools cannot be called with arbitrary shell commands       ║
+║  Tool schemas validated before execution                    ║
+╠══════════════════════════════════════════════════════════════╣
+║  CASE OUTPUT (append-only zone)                             ║
+║  data/cases/findings.jsonl    → append-only via jsonlines   ║
+║  data/cases/audit_*.json      → append-only via structlog   ║
+║  data/cases/report_*.json     → written once at pipeline end║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+This design ensures forensic evidence integrity: a pipeline bug, agent hallucination, or malicious tool argument cannot corrupt or overwrite source evidence files.
+
+---
+
 ## Key Design Decisions
 
 ### Why Purpose-Built MCP Server?

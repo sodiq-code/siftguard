@@ -196,11 +196,9 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ## Demo Video
 
-> **3m 26s elite demo** — 9-scene animated production video: intro, problem statement, solution overview, live pipeline execution (terminal), EVTX deep-dive, MITRE ATT&CK mapping, audit trail, architecture, and outro. Narrated with full VO + background music.
+> **4m 11s elite demo** — 9-scene animated production video: intro, problem statement, solution overview, live pipeline execution (terminal), EVTX deep-dive, MITRE ATT&CK mapping, audit trail, architecture, and outro. Narrated with full VO + background music.
 
-[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/A5IoNS6NBQE)
-
-**Local file:** [`demo/siftguard_ELITE_v3.mp4`](demo/siftguard_ELITE_v3.mp4)
+[![SIFTGuard Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/QJh0BGsUE24)
 
 **What the demo covers:**
 - Stage 1 — Evidence inventory (4 artifacts discovered)
@@ -218,7 +216,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 | # | Component | Location |
 |---|-----------|----------|
 | 1 | Code Repository | This repo |
-| 2 | Demo Video | [▶ Watch on YouTube (3m 26s)](https://youtu.be/A5IoNS6NBQE) · [Local: demo/siftguard_ELITE_v3.mp4](demo/siftguard_ELITE_v3.mp4) |
+| 2 | Demo Video | [▶ Watch on YouTube (4m 11s)](https://youtu.be/QJh0BGsUE24) |
 | 3 | Architecture Diagram | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 4 | Written Description | [docs/DESCRIPTION.md](docs/DESCRIPTION.md) |
 | 5 | Dataset Documentation | [docs/DATASET.md](docs/DATASET.md) |
@@ -240,7 +238,7 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ### Stage 2 — AI Triage + Playbook Load
 ![Stage 2 - Groq AI Triage](demo/screenshots/sc2_triage_playbook.png)
-*Groq Llama-3.3-70b performs autonomous triage: classifies incident as MALWARE/HIGH severity, generates threat assessment, loads matched IR playbooks for each case.*
+*Groq Llama-3.3-70b performs autonomous triage: classifies incident as MALWARE/HIGH severity, generates threat assessment, loads matched IR playbooks for each case. (Output truncated at right edge — full hypothesis text continues beyond screenshot width.)*
 
 ---
 
@@ -250,15 +248,15 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 
 ---
 
-### Stage 4 — Findings + Remediation Plan
+### Stage 4 — Deep Analysis (Stage 5/8)
 ![Stage 4 - Findings and Remediation Plan](demo/screenshots/sc4_findings_plan.png)
-*3 high-confidence findings recorded (C2 beaconing, credential theft, lateral movement). Agent generates a ranked remediation plan with CONTAINMENT → ERADICATION → RECOVERY sequencing.*
+*Pipeline Stage 5/8 — AnalyzerAgent deep forensic pass: volatility3 memory scan, EVTX log parsing, IOC extraction. 3 high-confidence findings recorded (C2 beaconing, credential theft, lateral movement).*
 
 ---
 
-### Stage 5 — Remediation Execution
+### Stage 5 — Remediation Plan (Stages 6–7/8)
 ![Stage 5 - Remediation Execution](demo/screenshots/sc5_execution.png)
-*5 remediation actions executed autonomously: Block C2 IP, Remove Malicious Service, Restore System, Isolate Host, Remove Scheduled Task. Each action shows category, risk level, and simulated command output.*
+*Pipeline Stages 6–7/8 — PlannerAgent generates ranked remediation plan; ExecutorAgent runs 5 actions autonomously: Block C2 IP, Remove Malicious Service, Restore System, Isolate Host, Remove Scheduled Task.*
 
 ---
 
