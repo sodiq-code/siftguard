@@ -11,11 +11,22 @@ import warnings; warnings.filterwarnings("ignore")
 #   Stage 6+7 terminal: VO7=35.8s
 #   Stage 8 terminal: VO8=20.1s
 
-import os, sys, time, json, logging
+import os, sys, time, json, logging, argparse
+
+# ── CLI flags ────────────────────────────────────────────────────────────────
+_parser = argparse.ArgumentParser(prog="siftguard", add_help=False)
+_parser.add_argument("--live", action="store_true",
+                     help="Use real Groq API for triage + planning (requires GROQ_API_KEY in .env)")
+_parser.add_argument("--demo", action="store_true",
+                     help="Force demo mode (deterministic output, no API calls) — default behaviour")
+_args, _ = _parser.parse_known_args()
 
 # ── Demo mode: ON by default — deterministic output matching the demo video ──
-# Pass --live to main.py (or set DEMO_MODE=false in .env) to use real Groq API
-os.environ.setdefault("DEMO_MODE", "true")
+# --live sets DEMO_MODE=false so TriageAgent + PlannerAgent call Groq API
+if _args.live:
+    os.environ["DEMO_MODE"] = "false"
+else:
+    os.environ.setdefault("DEMO_MODE", "true")
 
 # Force UTF-8 output so box-drawing chars render correctly
 sys.stdout.reconfigure(encoding='utf-8')
@@ -255,7 +266,10 @@ for f in findings_list:
     desc = str(f_dict.get('title', f_dict.get('description', 'Finding')))[:54]
     mitre_t = str(f_dict.get('mitre_technique', ''))
     sc = sev_colors.get(sev, '\033[0m')
-    print(f'  \033[1;32m\u2713\033[0m  {sc}[{sev:<8}]\033[0m  {desc:<54}  ID:{fid}  \033[1;35m{mitre_t}\033[0m')
+    conf_f = str(f_dict.get('confidence', 'HIGH')).upper()
+    conf_label = 'CONFIRMED' if conf_f == 'HIGH' else 'INFERRED'
+    conf_color = '\033[1;32m' if conf_f == 'HIGH' else '\033[0;33m'
+    print(f'  \033[1;32m\u2713\033[0m  {sc}[{sev:<8}]\033[0m  {conf_color}[{conf_label}]\033[0m  {desc:<54}  ID:{fid}  \033[1;35m{mitre_t}\033[0m')
     recorded.append({'id': fid, **f_dict})
     flush()
     time.sleep(1.5)
