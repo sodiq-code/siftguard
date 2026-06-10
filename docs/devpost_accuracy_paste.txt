@@ -9,7 +9,7 @@ APT actor remotely accesses Windows Server 2019, creates a backdoor account, and
 DETECTION RESULTS
   Findings detected:     3/3 (100%) — against the scenario the pipeline was designed for
   IOC types extracted:   3/5 (IP address, file path, account — no file hashes)
-  MITRE auto-mapping:    0/6 — check_mitre tool exists but is not wired into record_finding(); known gap
+  MITRE techniques:      4 hardcoded in simulation fixtures (T1078, T1136.001, T1053.005, T1070.004) — visible in Stage 5/8 and Stage 8/8 terminal output; dynamic check_mitre tool not wired into record_finding() for novel data
   Timeline reconstructed: 4/4 events with correct timestamps (simulated fixtures)
 
 REMEDIATION PLAN
@@ -29,8 +29,13 @@ PIPELINE METRICS
   findings.jsonl entries: 8 (4 findings × 2 runs — duplicate bug, known, unfixed)
   Audit trail:            Complete (session ID, timestamps, tool inputs, decisions, remediation)
 
+EVIDENCE INTEGRITY
+  All MCP tool calls are read-only — the server exposes no write/modify/delete operations against evidence files.
+  Evidence cannot be altered through the tool interface by architectural design, not prompt instruction.
+  No spoliation testing performed against adversarial inputs — known gap.
+
 KNOWN GAPS SUMMARY
-  1. MITRE ATT&CK auto-mapping not implemented in current pipeline
+  1. MITRE dynamic auto-mapping not wired into pipeline (4 techniques present as simulation fixtures only)
   2. File hash extraction not available (Sleuthkit sim returns fls listings only)
   3. Duplicate findings written across runs (no deduplication check)
   4. Backdoor account not included in remediation plan
@@ -40,7 +45,7 @@ KNOWN GAPS SUMMARY
 SUMMARY SCORES (self-assessed)
   Detection rate (simulation):  100%
   IOC accuracy:                  60%
-  MITRE auto-coverage:            0%
+  MITRE coverage (simulation):   4 techniques (hardcoded fixtures, not runtime auto-mapped)
   Remediation correctness:       ~83%
   Self-correction:               Functional (1/2 strategies succeeded)
   Audit completeness:            100%

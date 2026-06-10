@@ -54,10 +54,10 @@ SIFTGuard was evaluated against a simulated APT intrusion scenario (Windows late
 
 | Status | Detail |
 |--------|--------|
-| Auto-mapped techniques | **0** |
-| Manual mapping (reference only) | T1059, T1547, T1078, T1136, T1021, T1053 |
+| Hardcoded per-finding techniques (simulation) | **4** — T1078, T1136.001, T1053.005, T1070.004 |
+| Dynamic `check_mitre` tool auto-mapping | **0** |
 
-The `check_mitre` tool returns technique IDs from a keyword-lookup knowledge base, but the pipeline does not currently wire these into the findings schema. **No MITRE technique IDs appear in `findings.jsonl` or the generated report.** This is a known gap — the mapping logic exists in `tools/mcp_tools.py` but is not called on the final `record_finding()` path.
+In DEMO_MODE, each simulated finding carries a hardcoded MITRE technique ID (visible in Stage 5/8 terminal output and Stage 8/8 audit summary: "4 ATT&CK techniques mapped"). These tags are pre-assigned in the simulation fixtures — they are not resolved at runtime by the `check_mitre` tool. The `check_mitre` tool exists in `tools/mcp_tools.py` and performs keyword-lookup against a technique knowledge base, but it is not wired into the `record_finding()` call path. Against real evidence, MITRE auto-mapping would require wiring `check_mitre` into the Analyzer agent output — this is a known gap.
 
 ### Timeline Reconstruction
 
@@ -134,7 +134,7 @@ The first strategy (`swap_plugin_syntax`) failed — this is real behavior, not 
 |----------|----------|-------|
 | Forensic findings | 0 confirmed | All 3 findings match the seeded scenario |
 | IOC extractions | 0 confirmed | Regex extraction against simulated output |
-| MITRE mappings | N/A | Not implemented — 0 auto-mapped |
+| MITRE mappings | 0 false positives | 4 hardcoded simulation fixtures match the known scenario |
 | Remediation actions | 1 gap | Account `hacker` not included in plan |
 
 **Limitation:** Because the entire pipeline runs against deterministic simulation output, false positive analysis against a real adversarial dataset is not possible in the current evaluation. The simulation was designed to match the findings — this is by construction, not validation.
@@ -156,9 +156,15 @@ The first strategy (`swap_plugin_syntax`) failed — this is real behavior, not 
 
 ---
 
+## Evidence Integrity
+
+All MCP tool calls in SIFTGuard are read-only operations — the MCP server exposes no write, delete, or modify functions against evidence files. Original evidence data cannot be altered through the tool interface by architectural design, not prompt instruction. No spoliation testing was performed against adversarial inputs — this is a known gap.
+
+---
+
 ## Limitations & Known Gaps
 
-1. **MITRE ATT&CK Mapping:** Zero auto-mapped technique IDs in current version. `check_mitre` tool exists but is not wired into the `record_finding()` output path. Manual mapping (6 techniques) provided in docs only.
+1. **MITRE ATT&CK Mapping:** 4 technique IDs (T1078, T1136.001, T1053.005, T1070.004) appear in simulation output as hardcoded fixtures per finding. Dynamic `check_mitre` tool auto-mapping is not wired into the `record_finding()` call path — zero runtime auto-mapping against novel data.
 
 2. **Simulation Mode:** `DEMO_MODE=true` in `.env`. Volatility3 and Sleuthkit return fixture data, not real forensic analysis. Real SIFT Workstation with actual evidence files required for production use.
 
@@ -178,7 +184,7 @@ The first strategy (`swap_plugin_syntax`) failed — this is real behavior, not 
 |-----------|-------|--------------|
 | Detection Rate | 100% (simulation) | All 3/3 seeded findings detected — not validated against novel real-world data |
 | IOC Accuracy | 60% | 3/5 IOC types extracted; no hash extraction |
-| MITRE Coverage | 0% auto | Not implemented in current pipeline |
+| MITRE Coverage | 4 techniques (simulation fixtures) | Hardcoded per finding in DEMO_MODE; dynamic `check_mitre` not wired into pipeline |
 | Timeline Accuracy | N/A | Fixtures only — no real EVTX parsing in demo |
 | Plan Correctness | ~83% | 5/6 required actions included (missing account disable) |
 | Self-Correction | ✅ Functional | 1/2 strategies succeeded; task completed via fallback |
