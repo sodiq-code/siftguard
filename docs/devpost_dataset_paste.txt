@@ -1,0 +1,41 @@
+EVIDENCE DATASET DOCUMENTATION
+
+SIFTGuard was evaluated against a simulated APT intrusion scenario: lateral movement + persistence on Windows Server 2019 (hostname: CORP-WIN-SRV01, incident date: 2024-01-15).
+
+SUPPORTED EVIDENCE FORMATS
+- Windows Memory Dump (.mem, .raw, .dmp) — analyzed via Volatility3
+- Windows Event Logs (.evtx) — analyzed via python-evtx
+- Disk Images (.E01, .dd, .img) — analyzed via Sleuthkit (fls, mmls)
+- Network Captures (.pcap) — planned, not yet implemented
+
+SIMULATED DATASET (DEMO_MODE=true)
+When real evidence files are absent, SIFTGuard activates forensic simulation mode — generating realistic DFIR artifacts that mirror a real intrusion.
+
+Simulated files:
+  data/evidence/memory/victim.mem    (2 GB Windows memory dump)
+  data/evidence/logs/Security.evtx  (20 MB, ~11,500 events)
+  data/evidence/logs/System.evtx    (10 MB, ~6,000 events)
+  data/evidence/disk/victim-disk.E01 (50 GB disk image)
+
+INDICATORS OF COMPROMISE EXTRACTED
+  IP Address (C2):   185.220.101.47
+  Malicious File:    C:\Temp\svch0st.exe (typosquatted svchost)
+  Backdoor Account:  hacker (Event 4720/4722)
+  Malicious Service: WindowsUpdate → C:\Temp\svch0st.exe (Event 7045)
+  Scheduled Task:    PersistTask (Event 4698)
+
+MITRE ATT&CK COVERAGE (manual mapping)
+  T1078 — Valid Accounts (Initial Access)
+  T1136.001 — Create Account (Persistence)
+  T1543.003 — New Service (Persistence)
+  T1053.005 — Scheduled Task (Persistence)
+  T1055 — Process Injection / masquerading (Defense Evasion)
+  T1021 — Remote Services (Lateral Movement)
+
+DATASET SCOPE
+  Simulated events:     ~17,500 total (Security + System EVTX)
+  Timeline datapoints:  9 reconstructed events
+  IOCs extracted:       3 unique (1 IP, 1 file path, 1 account)
+  Evidence types:       Memory + Event Logs + Disk (full triage)
+
+To run against real evidence: drop .mem, .evtx, and .E01 files into data/evidence/ subdirectories. SIFTGuard auto-detects real files and switches from simulation to live Volatility3/Sleuthkit analysis. See docs/HOWTO.md for full instructions.
