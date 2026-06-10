@@ -68,8 +68,8 @@ The `ExecutorAgent` implements a structural HITL gate — not a prompt instructi
 
 ## Why This Approach Wins
 
-1. **Matches judge criteria exactly**: The SANS rubric explicitly calls out "Purpose-Built Forensic MCP Server" as the highest-scoring architecture
-2. **All 6 judge criteria addressed**:
+1. **Matches evaluation criteria exactly**: The SANS rubric explicitly calls out "Purpose-Built Forensic MCP Server" as the highest-scoring architecture
+2. **All 6 evaluation criteria addressed**:
    - *Autonomous Execution Quality* → self-correction agent + full pipeline
    - *IR Accuracy* → MITRE mapping + IOC extraction + ground truth comparison
    - *Breadth/Depth* → 10 tools across memory + logs + disk + network
@@ -77,4 +77,4 @@ The `ExecutorAgent` implements a structural HITL gate — not a prompt instructi
    - *Audit Trail Quality* → structlog JSON for every tool call
    - *Usability/Documentation* → one-command setup + all 8 docs
 3. **Demo-ready**: Full pipeline runs in <60 seconds with visible self-correction
-4. **Reproducible**: Evidence simulated — any judge can run it without SIFT VM
+4. **Reproducible**: Evidence simulated — any reviewer can run it without SIFT VM

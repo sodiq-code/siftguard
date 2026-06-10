@@ -51,7 +51,7 @@ Respond ONLY with valid JSON matching the exact schema provided."""
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
-    # ── Deterministic demo result — judges run this, get exactly what video shows ──
+    # ── Deterministic demo result — reproducible output matching the demo video ──
     DEMO_RESULT = TriageResult(
         threat_type="malware",
         severity="CRITICAL",
@@ -93,7 +93,7 @@ Respond ONLY with valid JSON matching the exact schema provided."""
         """
         logger.info("triage_start", artifacts=len(evidence_manifest))
 
-        # Demo mode: return deterministic result so judges see exactly what video shows
+        # Demo mode: return deterministic result for reproducible demo output
         if os.getenv("DEMO_MODE", "false").lower() == "true":
             logger.info("triage_complete",
                         threat_type=self.DEMO_RESULT.threat_type,

@@ -10,7 +10,7 @@ this agent:
   3. Re-executes with modified parameters
   4. Logs the correction event for audit trail + demo video
 
-Judges see this in the video: tool fails → agent self-corrects → proceeds.
+Self-correction is logged transparently: tool fails → agent self-corrects → proceeds.
 This is the #1 differentiator from all other submissions.
 """
 
@@ -46,7 +46,7 @@ class CorrectionEvent:
         }
 
 
-# Global correction log — judges see this in reports
+# Global correction log — visible in audit trail and reports
 correction_log: list[CorrectionEvent] = []
 
 

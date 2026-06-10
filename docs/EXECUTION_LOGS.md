@@ -327,11 +327,11 @@ python main.py --live
 
 ---
 
-## Notes for Judges
+## Notes for Reviewers
 
 1. **Self-correction is real** — the two correction events above are genuine runtime failures caught and corrected by `SelfCorrectionAgent.execute_with_correction()`, not staged.
 
-2. **Demo mode is deterministic** — `DEMO_MODE=true` bypasses Groq API calls in `TriageAgent` and `PlannerAgent`, returning hardcoded results that exactly match the demo video. This ensures judges can reproduce the exact output without needing API credits.
+2. **Demo mode is deterministic** — `DEMO_MODE=true` bypasses Groq API calls in `TriageAgent` and `PlannerAgent`, returning hardcoded results that exactly match the demo video. This ensures reviewers can reproduce the exact output without needing API credits.
 
 3. **Live mode available** — set `GROQ_API_KEY` in `.env` and run `python main.py --live` to see actual Groq LLM calls for triage and planning (output may vary slightly).
 

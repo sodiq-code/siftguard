@@ -204,10 +204,10 @@ Dataset documentation: [docs/DATASET.md](docs/DATASET.md)
 - Stage 1 — Evidence inventory (4 artifacts discovered)
 - Stage 2 — Groq AI triage in 0.3s, playbook selected
 - Stage 4 — Deep forensic analysis: volatility3, EVTX parsing, IOC extraction
-- **Self-Correction Engine** — 2 autonomous retries, zero human intervention (Judging Criterion #1)
+- **Self-Correction Engine** — 2 autonomous retries, zero human intervention (Evaluation Criterion #1)
 - Stage 5 — Findings + prioritized remediation plan (3 critical, 2 high severity)
-- Stage 6 — Human-in-the-Loop approval gate (Judging Criterion #4)
-- Stage 7 — Audit trail + JSON report (Judging Criterion #5)
+- Stage 6 — Human-in-the-Loop approval gate (Evaluation Criterion #4)
+- Stage 7 — Audit trail + JSON report (Evaluation Criterion #5)
 
 ---
 

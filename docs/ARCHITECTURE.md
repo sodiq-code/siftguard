@@ -2,7 +2,7 @@
 
 ## System Overview
 
-SIFTGuard implements **Approach #2: Purpose-Built Forensic MCP Server** — the architecture SANS judges explicitly identify as most sound for this challenge.
+SIFTGuard implements **Approach #2: Purpose-Built Forensic MCP Server** — the architecture SANS evaluators identify as most sound for this challenge.
 
 The system has three layers:
 
@@ -164,7 +164,7 @@ The MCP server wraps SIFT tools as typed, schema-validated functions. Benefits:
 - **Repeatable**: Same tool, same args, same output schema every time
 - **Auditable**: Every call logged with args + result summary + timestamp
 - **Self-correctable**: Agent can inspect failure and retry with different args
-- **Judge-visible**: All 10 tools listed in MCP handshake — inspectable
+- **Reviewer-visible**: All 10 tools listed in MCP handshake — inspectable
 
 ### Why 5 Separate Agents?
 
@@ -178,7 +178,7 @@ Separation of concerns enables:
 - Fast inference (critical for live demo)
 - JSON mode for structured output
 - No hallucination on forensic schemas (tested)
-- Free tier available for judges to test
+- Free tier available for reviewers to test
 
 ### Self-Correction Architecture
 
