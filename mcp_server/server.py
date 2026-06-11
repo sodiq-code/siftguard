@@ -419,25 +419,63 @@ def _record_finding(finding: dict) -> dict:
             "hint": "All findings must have: title, severity, evidence, mitre_technique, confidence"
         }
 
+    # ── Auto-enrich: wire check_mitre into every finding ─────────────────
+    description = finding.get("description", finding["title"])
+    mitre_enrichment = _check_mitre(description)
+    if mitre_enrichment["matched_techniques"]:
+        # Prefer dynamically resolved techniques; keep original as fallback
+        primary = mitre_enrichment["matched_techniques"][0]
+        finding["mitre_technique_dynamic"] = primary["technique"]
+        finding["mitre_tactic_dynamic"] = primary["tactic"]
+        finding["mitre_technique_name"] = primary["name"]
+        finding["mitre_all_matched"] = [t["technique"] for t in mitre_enrichment["matched_techniques"]]
+    # Always keep original mitre_technique field for compatibility
+
+    # ── Deduplication: skip if same title already recorded this session ──
+    existing_titles = {f.get("title") for f in _findings}
+    if finding["title"] in existing_titles:
+        existing = next(f for f in _findings if f.get("title") == finding["title"])
+        return {
+            "success": True,
+            "finding_id": existing["id"],
+            "status": "DUPLICATE — already recorded this session",
+            "message": f"Finding '{finding['title']}' already recorded. ID: {existing['id']}",
+            "deduplicated": True,
+        }
+
     finding["id"] = hashlib.sha256(
-        (finding["title"] + datetime.now(timezone.utc).isoformat()).encode()
+        finding["title"].encode()
     ).hexdigest()[:12]
     finding["recorded_at"] = datetime.now(timezone.utc).isoformat()
     finding["status"] = "DRAFT"
 
     _findings.append(finding)
 
-    # Persist to case directory
+    # Persist to case directory — dedup by finding ID in the file
     CASE_DIR.mkdir(parents=True, exist_ok=True)
     findings_file = CASE_DIR / "findings.jsonl"
-    with open(findings_file, "a") as f:
-        f.write(json.dumps(finding) + "\n")
+
+    # Read existing IDs before writing
+    existing_ids: set[str] = set()
+    if findings_file.exists():
+        with open(findings_file, "r") as f:
+            for line in f:
+                try:
+                    existing_ids.add(json.loads(line.strip()).get("id", ""))
+                except json.JSONDecodeError:
+                    pass
+
+    if finding["id"] not in existing_ids:
+        with open(findings_file, "a") as f:
+            f.write(json.dumps(finding) + "\n")
 
     return {
         "success": True,
         "finding_id": finding["id"],
         "status": "DRAFT — awaiting human review",
         "message": f"Finding '{finding['title']}' recorded. Severity: {finding['severity']}",
+        "mitre_dynamic": finding.get("mitre_technique_dynamic"),
+        "mitre_tactic": finding.get("mitre_tactic_dynamic"),
     }
 
 

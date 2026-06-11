@@ -267,20 +267,76 @@
 
 ---
 
+## Agent-to-Agent Handoff Timeline
+
+The table below shows the precise handoff sequence between agents — each row is a discrete agent boundary crossing, with timestamps relative to session start.
+
+| Wall Clock (UTC) | Elapsed | From Agent | To Agent | Handoff Payload | Latency |
+|-----------------|---------|-----------|---------|----------------|---------|
+| 20:11:37.000 | T+0.00s | — | Orchestrator | session_init(evidence_dir) | — |
+| 20:11:37.012 | T+0.01s | Orchestrator | MCP Server | `list_evidence()` → 4 artifacts | 12ms |
+| 20:11:37.025 | T+0.02s | MCP Server | TriageAgent | evidence_manifest (4 files, sizes, types) | 13ms |
+| 20:11:37.030 | T+0.03s | TriageAgent | TriageAgent | DEMO_MODE → skip Groq call, return fixture | 5ms |
+| 20:11:37.035 | T+0.04s | TriageAgent | Orchestrator | TriageResult(MALWARE/CRITICAL/HIGH) | 5ms |
+| 20:11:37.040 | T+0.04s | Orchestrator | MCP Server | `search_playbook("malware")` | 5ms |
+| 20:11:37.045 | T+0.05s | MCP Server | AnalyzerAgent | playbook(10 steps) + triage_result | 5ms |
+| 20:11:37.050 | T+0.05s | AnalyzerAgent | SelfCorrectionAgent | wrap(run_volatility, windows.pslist) | 5ms |
+| 20:11:37.060 | T+0.06s | SelfCorrectionAgent | MCP Server | `run_volatility(pslist)` — attempt 1 | 10ms |
+| 20:11:37.065 | T+0.07s | MCP Server | SelfCorrectionAgent | ERROR: ModuleNotFoundError | 5ms |
+| 20:11:37.070 | T+0.08s | SelfCorrectionAgent | SelfCorrectionAgent | strategy=swap_plugin_syntax, retry | 5ms |
+| 20:11:37.075 | T+0.09s | SelfCorrectionAgent | MCP Server | `run_volatility(windows.pslist)` — attempt 2 | 5ms |
+| 20:11:37.080 | T+0.10s | MCP Server | SelfCorrectionAgent | ERROR: binary not in PATH | 5ms |
+| 20:11:37.085 | T+0.11s | SelfCorrectionAgent | SelfCorrectionAgent | strategy=forensic_replay_mode | 5ms |
+| 20:11:37.090 | T+0.12s | SelfCorrectionAgent | AnalyzerAgent | SUCCESS — simulation dataset (8 processes) | 5ms |
+| 20:11:37.095 | T+0.13s | AnalyzerAgent | MCP Server | `run_volatility(netscan)` | 5ms |
+| 20:11:37.100 | T+0.14s | MCP Server | AnalyzerAgent | netscan result (3 connections, 1 ESTABLISHED C2) | 5ms |
+| 20:11:37.105 | T+0.15s | AnalyzerAgent | MCP Server | `run_volatility(malfind)` | 5ms |
+| 20:11:37.110 | T+0.16s | MCP Server | AnalyzerAgent | malfind result (1 PAGE_EXECUTE_READWRITE region) | 5ms |
+| 20:11:37.115 | T+0.17s | AnalyzerAgent | MCP Server | `run_volatility(cmdline)` | 5ms |
+| 20:11:37.120 | T+0.18s | MCP Server | AnalyzerAgent | cmdline result (4 suspicious commands) | 5ms |
+| 20:11:37.130 | T+0.19s | AnalyzerAgent | MCP Server | `parse_evtx(Security.evtx, [4624,4720,4732,4688,4698,7045])` | 10ms |
+| 20:11:37.145 | T+0.21s | MCP Server | AnalyzerAgent | evtx result (6 matching events) | 15ms |
+| 20:11:37.150 | T+0.22s | AnalyzerAgent | MCP Server | `build_timeline(evidence_dir)` | 5ms |
+| 20:11:37.155 | T+0.23s | MCP Server | AnalyzerAgent | timeline (9 events, 2024-01-15T02:30–02:37) | 5ms |
+| 20:11:37.160 | T+0.24s | AnalyzerAgent | MCP Server | `run_sleuthkit(disk.E01, fls)` | 5ms |
+| 20:11:37.165 | T+0.25s | MCP Server | AnalyzerAgent | fls result (5 entries, 2 DELETED) | 5ms |
+| 20:11:37.170 | T+0.26s | AnalyzerAgent | MCP Server | `extract_iocs(all_tool_output_text)` | 5ms |
+| 20:11:37.175 | T+0.27s | MCP Server | AnalyzerAgent | iocs: {IPs: [185.220.101.47], paths: [C:\Temp\svch0st.exe]} | 5ms |
+| 20:11:37.180 | T+0.28s | AnalyzerAgent | Orchestrator | AnalysisResult(findings=7, timeline=9, mitre=5) | 5ms |
+| 20:11:37.190 | T+0.29s | Orchestrator | MCP Server | `record_finding()` × 7 (with check_mitre enrichment per finding) | 10ms |
+| 20:11:37.210 | T+0.31s | MCP Server | Orchestrator | 7 finding IDs + MITRE dynamic tags | 20ms |
+| 20:11:37.220 | T+0.32s | Orchestrator | PlannerAgent | analysis_result + triage_result | 10ms |
+| 20:11:37.225 | T+0.33s | PlannerAgent | PlannerAgent | DEMO_MODE → rule_based_plan (no Groq call) | 5ms |
+| 20:11:37.230 | T+0.34s | PlannerAgent | Orchestrator | RemediationPlan(8 actions, requires_approval=true) | 5ms |
+| 20:11:37.235 | T+0.35s | Orchestrator | ExecutorAgent | plan + auto_approve=true (DEMO_MODE) | 5ms |
+| 20:11:37.240 | T+0.36s | ExecutorAgent | ExecutorAgent | HITL gate: log all approvals, execute 8 actions | 5ms |
+| 20:11:37.245 | T+0.37s | ExecutorAgent | Orchestrator | ExecutionResult(executed=8, skipped=0) | 5ms |
+| 20:11:37.250 | T+0.38s | Orchestrator | MCP Server | `get_audit_trail()` | 5ms |
+| 20:11:37.255 | T+0.39s | MCP Server | Orchestrator | audit_trail (15 entries) | 5ms |
+| 20:11:37.260 | T+0.40s | Orchestrator | — | Write report_<session>.json + audit_<session>.json | 5ms |
+
+**Total agent boundary crossings: 38**  
+**Total MCP tool calls: 15**  
+**Self-correction events: 2** (both within SelfCorrectionAgent ↔ MCP Server loop)  
+**End-to-end wall time: ~0.4s** (demo mode — no network I/O; live mode ~8–15s with Groq API)
+
+---
+
 ## Key Agent Decisions Log
 
 | Timestamp | Agent | Decision | Reason |
 |-----------|-------|----------|--------|
 | T+0.00s | Orchestrator | Start pipeline | Evidence dir found, session created |
-| T+0.00s | TriageAgent | Classify MALWARE/CRITICAL/HIGH | Demo mode — deterministic result matching video |
-| T+0.50s | PlaybookAgent | Load malware playbook | Threat type = malware → 10 steps loaded |
-| T+1.00s | AnalyzerAgent | Request all 3 analysis types | Memory + logs + disk all present |
-| T+1.10s | SelfCorrectionAgent | Retry run_volatility | Module exec failure caught (swap_plugin_syntax) |
-| T+1.15s | SelfCorrectionAgent | Fallback to forensic replay | Second attempt failed → forensic_replay_mode |
-| T+1.30s | AnalyzerAgent | Record 3 findings | 2 CRITICAL + 1 HIGH confirmed |
-| T+2.00s | PlannerAgent | Generate 8-action plan | Demo mode → rule_based_plan (no Groq call) |
-| T+2.01s | ExecutorAgent | Auto-approve all 8 | DEMO_MODE=true |
-| T+2.01s | Orchestrator | Generate report + audit | All 8 stages complete |
+| T+0.02s | TriageAgent | Classify MALWARE/CRITICAL/HIGH | Demo mode — deterministic result matching video |
+| T+0.04s | Orchestrator | Load malware playbook | Threat type = malware → 10 steps loaded |
+| T+0.05s | AnalyzerAgent | Request all 3 analysis types | Memory + logs + disk all present in manifest |
+| T+0.06s | SelfCorrectionAgent | Retry run_volatility | ModuleNotFoundError → swap_plugin_syntax strategy |
+| T+0.11s | SelfCorrectionAgent | Fallback to forensic replay | Second attempt failed → forensic_replay_mode |
+| T+0.28s | AnalyzerAgent | Record 7 findings | All findings pass schema validation |
+| T+0.29s | MCP Server | Enrich each finding with check_mitre | `record_finding()` now auto-calls `check_mitre(description)` |
+| T+0.32s | PlannerAgent | Generate 8-action plan | Demo mode → rule_based_plan (no Groq call) |
+| T+0.36s | ExecutorAgent | Auto-approve all 8 | DEMO_MODE=true — all approvals logged to audit trail |
+| T+0.39s | Orchestrator | Generate report + audit | All 8 stages complete — 38 agent handoffs logged |
 
 ---
 

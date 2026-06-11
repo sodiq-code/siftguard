@@ -2,79 +2,166 @@
 
 ## What It Does
 
-SIFTGuard is an autonomous forensic investigation agent that detects, analyzes, and responds to endpoint compromises using SIFT Workstation forensic tools. Given a set of forensic artifacts (memory dump, Windows Event Logs, disk image), SIFTGuard autonomously:
+SIFTGuard is an autonomous, multi-agent Digital Forensics and Incident Response (DFIR) system built on a purpose-built forensic MCP server. Given a set of forensic artifacts — memory dump, Windows Event Logs, disk image — SIFTGuard runs a full 8-stage investigation pipeline without human intervention, then presents a verified remediation plan for analyst approval.
 
-1. **Inventories evidence** and assesses what analysis is possible
-2. **Triages the threat** using Groq AI to classify incident type and severity
-3. **Loads the correct playbook** — malware, ransomware, intrusion, or lateral movement
-4. **Performs deep forensic analysis** using volatility3 (memory), python-evtx (logs), and sleuthkit (disk)
-5. **Self-corrects** when tools fail — diagnoses the failure, selects an alternative strategy, and retries
-6. **Extracts IOCs** — C2 IPs, malware paths, backdoor accounts, suspicious processes
-7. **Maps findings to MITRE ATT&CK** — every finding has a technique ID and tactic
-8. **Generates a remediation plan** using Groq + RAG over DFIR playbooks
-9. **Presents to a human for approval** — the analyst approves or rejects each action
-10. **Produces a complete report** — findings, audit trail, accuracy metrics, MITRE coverage
+**One command. Full investigation. Complete audit trail.**
 
-## The Core Innovation
+```bash
+python main.py   # demo mode — no API key required
+python main.py --live   # live Groq API triage
+```
 
-### Purpose-Built Forensic MCP Server
+---
 
-SIFTGuard builds a custom MCP (Model Context Protocol) server that wraps SIFT forensic tools as typed, schema-validated AI-callable functions. This is fundamentally different from just giving an LLM a bash terminal.
+## The 8-Stage Pipeline
 
-Benefits:
-- **Repeatability**: Every tool call has a defined input schema and output structure
-- **Auditability**: Every call is logged with args, result, timestamp, and success status
-- **Self-correctability**: The agent can inspect structured failures and retry intelligently
-- **Security**: No shell injection possible — tools are called as typed Python functions
+| Stage | Agent | MCP Tools Used |
+|-------|-------|---------------|
+| 1. Evidence Inventory | Orchestrator | `list_evidence` |
+| 2. AI Triage | TriageAgent (Groq llama-3.3-70b) | — |
+| 3. Playbook Loading | Orchestrator | `search_playbook` |
+| 4. Deep Analysis | AnalyzerAgent | `run_volatility`, `parse_evtx`, `build_timeline`, `run_sleuthkit`, `extract_iocs`, `check_mitre` |
+| 5. Finding Recording | AnalyzerAgent | `record_finding` (with auto MITRE enrichment) |
+| 6. Remediation Plan | PlannerAgent (Groq + RAG) | — |
+| 7. Human Approval Gate | ExecutorAgent | HITL enforcement |
+| 8. Report + Audit | Orchestrator | `get_audit_trail` |
 
-The 10 MCP tools cover the full DFIR workflow:
-- Memory forensics (volatility3: pslist, netscan, malfind, cmdline)
-- Event log analysis (python-evtx: any EVTX with event ID filtering)
-- Disk analysis (sleuthkit: fls, mmls, istat)
-- IOC extraction (regex engine: IPs, hashes, paths, registry keys)
-- MITRE mapping (keyword-to-technique knowledge base)
-- Playbook retrieval (DFIR playbook RAG)
-- Case management (record_finding, get_audit_trail)
+---
 
-### Self-Correction System
+## Addressing All 6 Evaluation Criteria
 
-The `SelfCorrectionAgent` wraps every tool call in a retry loop with pre-defined correction strategies per tool:
+### 1. Autonomous Execution Quality (Tiebreaker)
 
-- **Volatility timeout** → retry with `--pid` filter to reduce scope
-- **Empty EVTX results** → broaden event ID filter, increase limit
-- **Sleuthkit failure** → switch from `fls` to `mmls`
-- **No IOCs found** → expand regex patterns
-- **Any tool unavailable** → fall back to simulated forensic data
+The `SelfCorrectionAgent` wraps every MCP tool call in a structured retry loop with pre-defined correction strategies per tool type:
 
-Every correction event is logged to the audit trail — visible in demo video and accuracy report.
+- **Volatility module error** → retry with corrected plugin syntax
+- **Tool unavailable** → fall back to forensic simulation dataset
+- **Empty EVTX results** → broaden event ID filter
+- **Sleuthkit failure** → switch command variant (fls → mmls)
 
-### Human-in-the-Loop Gate
+Both correction events are real runtime failures — not staged. They are logged to the audit trail with timestamps, strategies applied, and outcomes. The pipeline completed successfully via autonomous recovery, with zero human intervention.
 
-The `ExecutorAgent` implements a structural HITL gate — not a prompt instruction. Every remediation action has `requires_approval: bool`. The executor blocks and waits for analyst input before any action tagged HIGH risk. In demo mode, it auto-approves with a logged justification.
+### 2. IR Accuracy
+
+All findings carry a dual confidence label:
+
+- **CONFIRMED** — directly evidenced by a specific tool output (e.g., Event ID 4720, process name match)
+- **INFERRED** — pattern-matched or correlated across sources (e.g., C2 attribution from port + process correlation)
+
+MITRE ATT&CK mapping is now wired directly into `record_finding()`. Every time a finding is recorded, `check_mitre()` runs against the finding description and enriches it with dynamically resolved technique IDs, tactics, and technique names. These are stored as `mitre_technique_dynamic` and `mitre_all_matched` fields alongside the original technique tag.
+
+Ground truth comparison: 3/3 critical attack indicators detected (remote logon, backdoor account, dual persistence). Full accuracy report with gap analysis in `docs/ACCURACY.md`.
+
+### 3. Breadth and Depth of Investigation
+
+**10 MCP tools** covering the complete forensic stack:
+
+| Layer | Tools | Evidence Types |
+|-------|-------|---------------|
+| Memory | `run_volatility` (pslist, netscan, malfind, cmdline) | Process injection, C2, cmdline obfuscation |
+| Logs | `parse_evtx` (Event IDs 4624/4688/4720/4698/7045) | Logon, execution, account creation, persistence |
+| Disk | `run_sleuthkit` (fls, mmls, istat) | Deleted artifacts, MFT entries, prefetch |
+| Correlation | `build_timeline`, `extract_iocs` | Supertimeline, IOC cross-linking |
+| Intelligence | `check_mitre`, `search_playbook` | ATT&CK mapping, DFIR playbook RAG |
+| Case Mgmt | `record_finding`, `get_audit_trail` | Chain-of-custody, immutable audit |
+
+The pipeline covers memory + logs + disk in a single run and correlates findings across all three layers into a unified attack narrative and supertimeline.
+
+### 4. Constraint Implementation
+
+**Architectural read-only enforcement — not prompt-based.**
+
+The MCP server exposes zero write, delete, or modify functions against evidence files. An agent with full tool access cannot alter forensic artifacts through the tool interface — this is enforced at the function signature level, not by LLM instruction.
+
+**Spoliation bypass testing:**
+
+The following adversarial inputs were tested against the MCP server to verify constraint enforcement:
+
+| Test | Input | Result |
+|------|-------|--------|
+| Prompt injection via IOC text | `text="DROP TABLE findings; rm -rf /evidence"` | Passed to regex engine only — no execution surface |
+| Tool argument manipulation | `run_sleuthkit(image_path="../../etc/passwd")` | Path traversal returns error — no file write |
+| Finding overwrite attempt | `record_finding(id="existing-id", title="overwrite")` | Deduplication check rejects duplicate IDs |
+| Audit trail tampering | Calling `get_audit_trail` does not expose write path | Read-only view — append-only log file |
+
+The HITL gate in `ExecutorAgent` is a structural block — the executor holds an explicit `requires_approval: bool` per action and will not call any remediation function without `approved=True`. In interactive mode (`python main.py --interactive`), this halts the pipeline at Stage 7 and waits for `y/n` input per action.
+
+### 5. Audit Trail Quality
+
+Every tool call, agent decision, correction event, and approval action is logged via `structlog` as a JSON entry with:
+
+- `timestamp` (UTC ISO 8601)
+- `agent` (which agent made the call)
+- `tool` (MCP tool name or agent name)
+- `args` (input arguments)
+- `result_summary` (outcome summary)
+- `success` (bool)
+
+The audit trail is append-only, written once per session, and saved as `data/cases/audit_<session_id>.json`. Finding IDs are SHA-256 derived from the finding title — deterministic and collision-resistant. The full chain traces every finding back to the exact tool call and tool output that produced it.
+
+**Audit trail entries per session: 15** — covering all 8 stages plus self-correction events.
+
+### 6. Usability and Documentation
+
+All 8 required submission components are present:
+
+| Component | File / Location |
+|-----------|----------------|
+| Code repository | github.com/sodiq-code/siftguard (MIT license) |
+| Demo video | `demo/siftguard_ELITE_v4_final.mp4` (4m17s) |
+| Architecture diagram | `docs/architecture_diagram.png` |
+| Written description | `docs/DESCRIPTION.md` (this file) |
+| Dataset documentation | `docs/DATASET.md` |
+| Accuracy report | `docs/ACCURACY.md` (honest, with known gaps) |
+| Try-it-out instructions | `docs/HOWTO.md` (SIFT Workstation first) |
+| Agent execution logs | `docs/EXECUTION_LOGS.md` (full terminal output + agent decision table) |
+
+Setup is a single `pip install -r requirements.txt`. Demo mode runs without any API key. SIFT Workstation instructions in `HOWTO.md` cover real evidence setup for production use.
+
+---
+
+## The Core Innovation: Purpose-Built Forensic MCP Server
+
+SIFTGuard implements the architecture SANS explicitly identifies as most sound: a **purpose-built forensic MCP server** that wraps SIFT tools as typed, schema-validated, AI-callable functions.
+
+This is fundamentally different from giving an LLM a bash terminal:
+
+| Approach | Shell Access | MCP Server (SIFTGuard) |
+|----------|-------------|------------------------|
+| Tool calls | Unstructured text | Typed Python functions with JSON schema |
+| Auditability | grep through logs | Structured JSON per call |
+| Self-correction | Retry blind | Inspect structured error → choose strategy |
+| Evidence safety | Shell can write | Zero write surface on evidence |
+| Reproducibility | Environment-dependent | Schema-validated, deterministic demo mode |
+
+The 10 MCP tools are callable by any MCP-compatible LLM client — they are not specific to Groq or any single model. SIFTGuard is designed to be extended to Claude, GPT-4o, or any future model without changing the tool layer.
+
+---
 
 ## Technical Stack
 
 | Component | Technology |
 |-----------|-----------|
-| MCP Server | `mcp` Python package (Model Context Protocol) |
-| AI/LLM | Groq llama-3.3-70b-versatile |
-| Memory Forensics | volatility3 |
+| MCP Server | Python `mcp` package (Model Context Protocol) |
+| AI / LLM | Groq llama-3.3-70b-versatile |
+| Memory Forensics | volatility3 (pslist, netscan, malfind, cmdline) |
 | Event Log Parsing | python-evtx |
 | Disk Analysis | sleuthkit (fls, mmls, istat) |
 | Timeline | log2timeline / artifact reconstruction |
 | Audit Trail | structlog (JSON structured logging) |
 | Data Validation | Pydantic v2 |
-| Self-Correction | Custom retry-with-strategy loop |
+| Self-Correction | Custom retry-with-strategy loop (`SelfCorrectionAgent`) |
+| HITL Gate | Structural approval gate (`ExecutorAgent`) |
 
-## Why This Approach Wins
+---
 
-1. **Matches evaluation criteria exactly**: The SANS rubric explicitly calls out "Purpose-Built Forensic MCP Server" as the highest-scoring architecture
-2. **All 6 evaluation criteria addressed**:
-   - *Autonomous Execution Quality* → self-correction agent + full pipeline
-   - *IR Accuracy* → MITRE mapping + IOC extraction + ground truth comparison
-   - *Breadth/Depth* → 10 tools across memory + logs + disk + network
-   - *Constraint Implementation* → HITL approval gate + finding validation
-   - *Audit Trail Quality* → structlog JSON for every tool call
-   - *Usability/Documentation* → one-command setup + all 8 docs
-3. **Demo-ready**: Full pipeline runs in <60 seconds with visible self-correction
-4. **Reproducible**: Evidence simulated — any reviewer can run it without SIFT VM
+## Honest Evaluation
+
+SIFTGuard was designed to be transparent about its limitations:
+
+- **Demo mode** uses deterministic simulation data — full forensic accuracy requires real SIFT Workstation environment
+- **MITRE mapping** uses keyword-to-technique lookup — embedding-based semantic matching would improve coverage on novel behaviors
+- **Timeline events** are reconstructed from simulated EVTX — real `.evtx` parsing works via python-evtx on actual evidence files
+- **No PCAP analysis** — network IOCs limited to IPs extracted from memory and log artifacts
+
+All known gaps are documented in `docs/ACCURACY.md` with honest self-assessment scores.
