@@ -128,6 +128,8 @@ python main.py --interactive
 | 7 | PlannerAgent | Generate remediation plan with Groq + RAG |
 | 8 | ExecutorAgent | Human-in-the-loop approval + execution |
 
+> **Forensic Integrity Note:** The ExecutorAgent generates remediation commands targeting the *compromised host* — the SIFT Workstation environment remains strictly read-only throughout the entire investigation. No evidence is modified.
+
 ---
 
 ## Self-Correction System
