@@ -1,12 +1,13 @@
 # SIFTGuard — Try-It-Out Instructions
 
-## Quick Start (5 minutes)
+> **Platform:** Designed and tested for **SANS SIFT Workstation** (Ubuntu 22.04 LTS base).  
+> SIFT Workstation has volatility3, sleuthkit, and python-evtx pre-installed — SIFTGuard integrates directly with these tools via its Custom MCP Server.
 
-### Prerequisites
+---
 
-- Python 3.10+
-- Git
-- A Groq API key (free at [console.groq.com](https://console.groq.com))
+## Option A — SIFT Workstation (Recommended for Judges)
+
+This is the intended deployment environment. Download the SIFT Workstation OVA from [SANS](https://www.sans.org/tools/sift-workstation/) and boot it, or use a SIFT-provisioned Linux host.
 
 ### 1. Clone the Repository
 
@@ -19,8 +20,7 @@ cd siftguard
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate          # Linux/Mac
-# venv\Scripts\activate           # Windows
+source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
@@ -29,11 +29,13 @@ source venv/bin/activate          # Linux/Mac
 pip install -r requirements.txt
 ```
 
+> **Note:** On SIFT Workstation, `volatility3` and `sleuthkit` are pre-installed system-wide. SIFTGuard auto-detects them. `pip install -r requirements.txt` only adds the Python orchestration layer.
+
 ### 4. Configure API Key
 
 ```bash
 cp .env.example .env
-# Edit .env and set your Groq API key:
+# Edit .env and set your Groq API key (free at console.groq.com):
 # GROQ_API_KEY=gsk_your_key_here
 ```
 
@@ -43,7 +45,26 @@ cp .env.example .env
 python main.py
 ```
 
-That's it. The full 8-stage pipeline runs automatically in ~5 seconds.
+The full 8-stage pipeline runs in ~5 seconds with deterministic demo output.
+
+---
+
+## Option B — Generic Ubuntu/Debian (Non-SIFT)
+
+If you don't have SIFT Workstation, install the required forensic tools manually:
+
+```bash
+# Sleuthkit
+sudo apt update && sudo apt install -y sleuthkit
+
+# Volatility3
+pip install volatility3
+
+# python-evtx (also installed via requirements.txt)
+pip install python-evtx
+```
+
+Then follow steps 1–5 above. All other behavior is identical.
 
 ---
 
@@ -70,21 +91,14 @@ Output files are saved to `data/cases/`:
 
 1. Place evidence in `data/evidence/`:
    ```
-   data/evidence/memory/victim.mem
-   data/evidence/logs/Security.evtx
-   data/evidence/disk/victim-disk.E01
+   data/evidence/memory/victim.mem        ← Volatility3 memory image
+   data/evidence/logs/Security.evtx       ← Windows Event Log
+   data/evidence/disk/victim-disk.E01     ← Disk image (Sleuthkit)
    ```
 
-2. Ensure SIFT tools are available (or install on SIFT Workstation):
-   ```bash
-   # Volatility3
-   pip install volatility3
-   
-   # Sleuthkit
-   sudo apt install sleuthkit
-   
-   # python-evtx
-   pip install python-evtx
+2. Disable demo mode in `.env`:
+   ```
+   DEMO_MODE=false
    ```
 
 3. Run normally:
@@ -92,7 +106,7 @@ Output files are saved to `data/cases/`:
    python main.py
    ```
 
-SIFTGuard detects real evidence and uses live analysis. No code changes needed.
+SIFTGuard auto-detects real evidence and invokes live SIFT tools. No code changes needed.
 
 ---
 
@@ -150,7 +164,7 @@ Approve this action? [y/n]:
 | `GROQ_MODEL` | `llama-3.3-70b-versatile` | LLM model for triage + planning |
 | `EVIDENCE_DIR` | `./data/evidence` | Path to forensic evidence |
 | `CASE_DIR` | `./data/cases` | Output directory for reports |
-| `DEMO_MODE` | `true` | Auto-approve remediation actions |
+| `DEMO_MODE` | `true` | Auto-approve + use simulated evidence |
 | `APPROVAL_TIMEOUT` | `0` | Seconds to wait for human approval |
 | `LOG_LEVEL` | `INFO` | Logging verbosity |
 | `MAX_RETRY_ATTEMPTS` | `3` | Self-correction retry limit |
@@ -178,7 +192,7 @@ python tools/accuracy_report.py
 |-------|-----|
 | `ModuleNotFoundError: groq` | Run `pip install -r requirements.txt` |
 | `AuthenticationError: Invalid API Key` | Set correct `GROQ_API_KEY` in `.env` |
-| Volatility3 fails | Expected — pipeline self-corrects and uses simulation |
+| Volatility3 fails on real evidence | Expected on non-SIFT hosts — pipeline self-corrects |
 | No output in `data/cases/` | Check write permissions on `data/` directory |
 | `JSONDecodeError` from Groq | Transient; re-run — LLM occasionally malforms JSON |
 
